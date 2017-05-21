@@ -1,0 +1,83 @@
+@extends('layouts.app')
+
+@section('content')
+<style>
+.sv-uploader {
+    position: relative;
+    height: 350px;
+    overflow-y: hidden;
+    width: inherit;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px dashed #CCCCCC;
+    background-color: #FAFAFA;
+    padding: 20px;
+}
+.sv-upload-button {
+    display: block;
+    width: 300px;
+    height: 80px;
+    margin: 100px auto;
+    text-align: center;
+    background: #00ABC7;
+    color: #FFFFFF;
+    border-radius: 2px;
+    border: 1px solid #37B7CC;
+}
+#modal-file-upload
+{
+top:250px;
+}
+</style>
+
+
+<script>
+    function uploadFile(obj, type) {
+
+        $.ajaxFileUpload({
+            url : "http://localhost:8081/ws2/servlet/fileUpload",
+            secureuri : false,// 一般设置为false
+            fileElementId : "upfile"+type,// 文件上传表单的id <input type="file" id="fileUpload" name="file" />
+            dataType : 'json',// 返回值类型 一般设置为json
+            data: {'type': type, "type2":2},
+
+            success : function(data) // 服务器成功响应处理函数
+            {
+            },
+            error : function(data)// 服务器响应失败处理函数
+            {
+                console.log("服务器异常");
+            }
+        });
+        return false;
+    }
+</script>
+
+
+<div class="container" style="margin:40px auto">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">上传视频</div>
+                <div class="panel-body">
+                  @include('message.errors')
+                  <div class="sv-uploader">
+                      <form method="POST" action="/upload/select" enctype="multipart/form-data" >
+                          <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                          <button type="button" onclick="upfile.click()" class="sv-upload-button">
+                              <h4>选择视频</h4><h6>本站只支持上传“mp4”格式的视频文件</h6>
+                          </button>
+                          <input type="file" name="file" id="upfile" onchange="uploadFile(this,1)" style="visibility: hidden; position: absolute;"/>
+                      </form>
+
+                      @foreach ($errors->all() as $message)
+                          <span class="help-block"><strong>出错啦：{{ $message }}</strong></span>
+                      @endforeach
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@include('_modals')
+@endsection
